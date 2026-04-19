@@ -21,10 +21,11 @@ export default function Home({ posts }) {
   return (
     <>
       <Head>
-        <title>Michigan Trout Daily — Daily Stream Conditions &amp; Hatch Reports by {AUTHOR_NAME}</title>
-        <meta name="description" content={`Daily Michigan trout stream conditions, hatch reports, and fly fishing intelligence by ${AUTHOR_NAME}. Live USGS gauge data. One river, every morning.`} />
+        <title>{`${AUTHOR_NAME} | Michigan Trout Daily — Daily Stream Conditions and Hatch Reports`}</title>
+        <meta name="description" content={`${AUTHOR_NAME} publishes daily Michigan trout stream conditions, hatch reports, and fly fishing intelligence. Live USGS gauge data. One river, every morning.`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={SITE_URL} />
+        <link rel="author" href={AUTHOR_URL} />
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`Michigan Trout Daily — By ${AUTHOR_NAME}`} />

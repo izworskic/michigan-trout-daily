@@ -5,28 +5,41 @@ import { getPosts, getPost, cleanContent, getExcerpt, articleSchema, formatDate,
 export default function PostPage({ post, schema, excerpt }) {
   if (!post) return <div style={{ padding: '60px 24px', textAlign: 'center', color: '#777' }}>Report not found.</div>;
 
-  // Clean byline injected by cron (we render our own)
+  // Clean cron byline and ALL JSON-LD artifacts WordPress encoded into content
   const content = cleanContent(post.content || '')
     .replace(/<p[^>]*>By <a[^>]*>Chris Izworski<\/a>[^<]*<\/p>/i, '')
+    .replace(/<p[^>]*>&#8220;`[\s\S]*?<\/p>/gi, '')
+    .replace(/<p[^>]*>\{&#8220;@context[\s\S]*?<\/p>/gi, '')
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 
   return (
     <>
       <Head>
-        <title>{post.title} — Michigan Trout Daily by {AUTHOR_NAME}</title>
-        <meta name="description" content={excerpt} />
+        <title>{`${AUTHOR_NAME}: ${post.title} | Michigan Trout Daily`}</title>
+        <meta name="description" content={`${AUTHOR_NAME} reports on ${excerpt}`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/post/${post.slug}`} />
+        <link rel="author" href={AUTHOR_URL} />
         {/* Open Graph */}
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${post.title} — ${SITE_NAME}`} />
+        <meta property="og:title" content={`${AUTHOR_NAME}: ${post.title}`} />
         <meta property="og:description" content={excerpt} />
         <meta property="og:url" content={`${SITE_URL}/post/${post.slug}`} />
         <meta property="og:site_name" content={SITE_NAME} />
         <meta property="article:author" content={AUTHOR_URL} />
         <meta property="article:published_time" content={post.date} />
-        {/* Structured Data */}
+        {/* Article Schema */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Chris Izworski', item: AUTHOR_URL },
+            { '@type': 'ListItem', position: 2, name: 'Michigan Trout Daily', item: SITE_URL },
+            { '@type': 'ListItem', position: 3, name: post.title, item: `${SITE_URL}/post/${post.slug}` },
+          ]
+        })}} />
       </Head>
 
       <div className="article-wrap">
