@@ -24,6 +24,7 @@ export default function Home({ posts }) {
         <title>{`${AUTHOR_NAME} | Michigan Trout Daily — Daily Stream Conditions and Hatch Reports`}</title>
         <meta name="description" content={`${AUTHOR_NAME} publishes daily Michigan trout stream conditions, hatch reports, and fly fishing intelligence. Live USGS gauge data. One river, every morning.`} />
         <meta name="author" content={AUTHOR_NAME} />
+        <meta name="keywords" content="Michigan trout fishing, fly fishing Michigan, Au Sable river conditions, Michigan trout streams, USGS stream gauge, hatch report, Chris Izworski" />
         <link rel="canonical" href={SITE_URL} />
         <link rel="author" href={AUTHOR_URL} />
         {/* Open Graph */}
@@ -32,6 +33,14 @@ export default function Home({ posts }) {
         <meta property="og:description" content="One Michigan river, every morning. Live USGS conditions, what's hatching, and whether it's worth the drive." />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:site_name" content="Michigan Trout Daily" />
+        <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Michigan Trout Daily — By ${AUTHOR_NAME}`} />
+        <meta name="twitter:description" content="One Michigan river, every morning. Live USGS conditions and hatch reports." />
+        <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
         {/* Structured Data */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       </Head>
