@@ -5,7 +5,7 @@ export default function Sitemap() { return null; }
 export async function getServerSideProps({ res }) {
   const posts = await getPosts(100);
 
-  const staticPages = ['', '/about'];
+  const staticPages = ['', '/about', '/chris-izworski/'];
   const postUrls = posts.map(p => `/post/${p.slug}`);
   const allUrls  = [...staticPages, ...postUrls];
 
@@ -13,8 +13,8 @@ export async function getServerSideProps({ res }) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allUrls.map(url => `  <url>
     <loc>${SITE_URL}${url}</loc>
-    <changefreq>${url === '' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${url === '' ? '1.0' : url.includes('/post/') ? '0.8' : '0.6'}</priority>
+    <changefreq>${url === '' || url === '/chris-izworski/' ? 'daily' : 'weekly'}</changefreq>
+    <priority>${url === '' ? '1.0' : url === '/chris-izworski/' ? '0.9' : url.includes('/post/') ? '0.8' : '0.6'}</priority>
   </url>`).join('\n')}
 </urlset>`;
 
