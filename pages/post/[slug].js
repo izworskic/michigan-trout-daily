@@ -58,7 +58,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <div className="article-byline">
           By <a href={AUTHOR_URL} target="_blank" rel="noopener">{AUTHOR_NAME}</a>
           &nbsp;&#183;&nbsp; Michigan Trout Daily
-          &nbsp;&#183;&nbsp; <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener">Live River Data</a>
+          &nbsp;&#183;&nbsp; <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Live River Data</a>
         </div>
 
         <div
@@ -66,15 +66,15 @@ export default function PostPage({ post, schema, excerpt, related }) {
           dangerouslySetInnerHTML={{ __html: content }}
         />
 
-        {/* Author Bio — strong "Chris Izworski" entity signal */}
+        {/* Author Bio: strong "Chris Izworski" entity signal */}
         <div style={{ background: '#f7f7f5', padding: '24px', marginTop: '40px', borderLeft: '4px solid #1a5c3a' }}>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#1a5c3a', marginBottom: '10px' }}>About the Author</div>
           <div style={{ fontSize: '15px', color: '#444', lineHeight: 1.7 }}>
-            <a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#1a5c3a', fontWeight: 600 }}>{AUTHOR_NAME}</a> is a Michigan angler and the founder of the <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener">Michigan Trout Report</a>, which tracks live conditions for 110+ Michigan rivers. He publishes daily stream reports here at Michigan Trout Daily.
+            <a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#1a5c3a', fontWeight: 600 }}>{AUTHOR_NAME}</a> is a Michigan angler and the founder of the <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Michigan Trout Report</a>, which tracks live conditions for 110+ Michigan rivers. He publishes daily stream reports here at Michigan Trout Daily.
           </div>
         </div>
 
-        {/* Related Reports — internal linking for SEO */}
+        {/* Related Reports: internal linking for SEO */}
         {related && related.length > 0 && (
           <div style={{ marginTop: '36px' }}>
             <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#1a5c3a', marginBottom: '16px', borderBottom: '2px solid #1a5c3a', paddingBottom: '8px' }}>More Reports by {AUTHOR_NAME}</div>
@@ -91,7 +91,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
 
         <div className="article-footer">
           <Link href="/" className="btn-outline">&larr; All Reports</Link>
-          <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener" className="btn-primary">Live River Data &rarr;</a>
+          <a href="https://michigantroutreport.com" target="_blank" rel="noopener" className="btn-primary">Live River Data &rarr;</a>
         </div>
       </div>
     </>
@@ -119,7 +119,7 @@ export async function getStaticProps({ params }) {
     riverName: post.title.split(':')[0].replace('The ', '').trim(),
   });
 
-  // Fetch other recent posts for "Related Reports" — boosts internal linking
+  // Fetch other recent posts for "Related Reports": boosts internal linking
   const allPosts = await getPosts(20);
   const related  = allPosts
     .filter(p => p.slug !== post.slug)

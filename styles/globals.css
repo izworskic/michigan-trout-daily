@@ -246,7 +246,7 @@ a:hover { text-decoration: underline; }
   color: var(--ink-2);
   line-height: 2;
 }
-.rivers-list li::before { content: '— '; color: var(--ink-3); font-family: 'IBM Plex Mono', monospace; }
+.rivers-list li::before { content: '- '; color: var(--ink-3); font-family: 'IBM Plex Mono', monospace; }
 .sidebar-box-green {
   background: var(--green);
   padding: 20px;
