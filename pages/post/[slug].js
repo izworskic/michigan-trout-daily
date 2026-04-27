@@ -54,7 +54,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <Link href="/" className="article-back">&larr; All Reports</Link>
 
         <div className="article-date">{formatDate(post.date)}</div>
-        <h1 className="article-title">{post.title}</h1>
+        <h1 className="article-title">{`${AUTHOR_NAME}: ${post.title}`}</h1>
         <div className="article-byline">
           By <a href={AUTHOR_URL} target="_blank" rel="noopener">{AUTHOR_NAME}</a>
           &nbsp;&#183;&nbsp; Michigan Trout Daily

@@ -49,7 +49,7 @@ export default function Home({ posts }) {
       <div style={{ borderBottom: '1px solid #ddd' }}>
         <div className="masthead">
           <div className="masthead-kicker">Michigan &nbsp;&#183;&nbsp; Daily Trout Conditions &nbsp;&#183;&nbsp; By {AUTHOR_NAME}</div>
-          <h1 className="masthead-title">Michigan Trout Daily</h1>
+          <h1 className="masthead-title">Michigan Trout Daily by Chris Izworski</h1>
           <p className="masthead-desc">One Michigan river, every morning. Live USGS conditions, what's hatching, and whether it's worth the drive.</p>
           <div className="masthead-btns">
             <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener" className="btn-primary">Live River Data &rarr;</a>
