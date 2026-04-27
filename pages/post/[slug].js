@@ -15,14 +15,14 @@ export default function PostPage({ post, schema, excerpt, related }) {
   return (
     <>
       <Head>
-        <title>{`${AUTHOR_NAME}: ${post.title} | Michigan Trout Daily`}</title>
-        <meta name="description" content={`${AUTHOR_NAME} reports on ${excerpt}`} />
+        <title>{`${post.title} | Michigan Trout Daily by ${AUTHOR_NAME}`}</title>
+        <meta name="description" content={`Daily Michigan trout report by ${AUTHOR_NAME}: ${excerpt}`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/post/${post.slug}`} />
         <link rel="author" href={AUTHOR_URL} />
         {/* Open Graph */}
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${AUTHOR_NAME}: ${post.title}`} />
+        <meta property="og:title" content={post.title} />
         <meta property="og:description" content={excerpt} />
         <meta property="og:url" content={`${SITE_URL}/post/${post.slug}`} />
         <meta property="og:site_name" content={SITE_NAME} />
@@ -33,7 +33,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <meta property="article:published_time" content={post.date} />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${AUTHOR_NAME}: ${post.title}`} />
+        <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={excerpt} />
         <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
         {/* Article Schema */}
@@ -54,7 +54,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <Link href="/" className="article-back">&larr; All Reports</Link>
 
         <div className="article-date">{formatDate(post.date)}</div>
-        <h1 className="article-title">{`${AUTHOR_NAME}: ${post.title}`}</h1>
+        <h1 className="article-title">{post.title}</h1>
         <div className="article-byline">
           By <a href={AUTHOR_URL} target="_blank" rel="noopener">{AUTHOR_NAME}</a>
           &nbsp;&#183;&nbsp; Michigan Trout Daily

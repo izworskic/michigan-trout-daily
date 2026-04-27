@@ -21,7 +21,7 @@ export default function Home({ posts }) {
   return (
     <>
       <Head>
-        <title>{`${AUTHOR_NAME} | Michigan Trout Daily: Daily Stream Conditions and Hatch Reports`}</title>
+        <title>{`Michigan Trout Daily: Daily Stream Conditions and Hatch Reports by ${AUTHOR_NAME}`}</title>
         <meta name="description" content={`${AUTHOR_NAME} publishes daily Michigan trout stream conditions, hatch reports, and fly fishing intelligence. Live USGS gauge data. One river, every morning.`} />
         <meta name="author" content={AUTHOR_NAME} />
         <meta name="keywords" content="Michigan trout fishing, fly fishing Michigan, Au Sable river conditions, Michigan trout streams, USGS stream gauge, hatch report, Chris Izworski" />

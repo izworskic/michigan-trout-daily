@@ -93,7 +93,7 @@ export default function ChrisIzworskiArchive({ posts }) {
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
                 <Link href={`/post/${post.slug}`} style={{ color: '#111', textDecoration: 'none' }}>
-                  {AUTHOR_NAME}: {post.title}
+                  {post.title}
                 </Link>
               </h2>
               <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>
