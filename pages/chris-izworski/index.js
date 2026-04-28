@@ -16,9 +16,15 @@ export default function ChrisIzworskiArchive({ posts }) {
           sameAs: [
             AUTHOR_URL,
             'https://chrisizworski.com',
+            'https://chrisizworski.com/chris-izworski/',
+            'https://github.com/izworskic',
+            'https://izworskic.github.io/',
             'https://michigantroutreport.com',
             'https://daily.michigantroutreport.com',
+            'https://michiganbirdingreport.com',
+            'https://daily.michiganbirdingreport.com',
             'https://gazette.chrisizworski.com',
+            'https://lawn.chrisizworski.com',
             'https://freighterviewfarms.com',
             'https://www.wikidata.org/wiki/Q138283432',
           ],
@@ -82,6 +88,9 @@ export default function ChrisIzworskiArchive({ posts }) {
           </p>
           <p style={{ fontSize: 15, color: '#555', lineHeight: 1.7 }}>
             {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://michigantroutreport.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day.
+          </p>
+          <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7 }}>
+            Related project profiles: <a href="https://chrisizworski.com/projects/">Chris Izworski project index</a>, <a href="https://izworskic.github.io/">GitHub Pages</a>, and <a href="https://michiganbirdingreport.com/chris-izworski">Michigan Birding Report founder profile</a>.
           </p>
         </header>
 

@@ -70,7 +70,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <div style={{ background: '#f7f7f5', padding: '24px', marginTop: '40px', borderLeft: '4px solid #1a5c3a' }}>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#1a5c3a', marginBottom: '10px' }}>About the Author</div>
           <div style={{ fontSize: '15px', color: '#444', lineHeight: 1.7 }}>
-            <a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#1a5c3a', fontWeight: 600 }}>{AUTHOR_NAME}</a> is a Michigan angler and the founder of the <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Michigan Trout Report</a>, which tracks live conditions for 110+ Michigan rivers. He publishes daily stream reports here at Michigan Trout Daily.
+            <a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#1a5c3a', fontWeight: 600 }}>{AUTHOR_NAME}</a> is a Michigan angler and the founder of the <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Michigan Trout Report</a>, which tracks live conditions for 110+ Michigan rivers. He publishes daily stream reports here at Michigan Trout Daily. His broader public project index is at <a href="https://chrisizworski.com/projects/" target="_blank" rel="noopener">chrisizworski.com/projects</a>.
           </div>
         </div>
 

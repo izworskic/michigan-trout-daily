@@ -22,6 +22,7 @@ function SiteFooter() {
       <nav className="footer-links">
         <Link href="/">Reports</Link>
         <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Live Data</a>
+        <a href="https://chrisizworski.com/projects/" target="_blank" rel="noopener">Projects</a>
         <Link href="/about">About</Link>
         <a href={AUTHOR_URL} target="_blank" rel="noopener">Chris Izworski</a>
       </nav>
