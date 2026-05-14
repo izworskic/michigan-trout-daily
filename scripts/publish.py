@@ -304,7 +304,12 @@ def season_for(month):
     return "the current season"
 
 def claude_generate(system, user):
-    api_key = os.environ["ANTHROPIC_API_KEY"]
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY secret is not set on the repository. "
+            "Add it at: Settings > Secrets and variables > Actions > New repository secret. "
+            "Name: ANTHROPIC_API_KEY  Value: your key from console.anthropic.com")
     r = requests.post(
         ANTHROPIC_API,
         headers={
