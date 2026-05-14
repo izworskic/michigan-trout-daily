@@ -474,9 +474,36 @@ def indexnow_ping(url):
     except Exception as e:
         log(f"IndexNow ping failed: {e}")
 
+
+def already_published_today():
+    """Skip if the old (external) cron already posted today.
+    Avoids duplicate posts now that both crons are alive."""
+    et = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4)))
+    today_str = et.strftime("%Y-%m-%d")
+    try:
+        r = requests.get(f"{WP_API}/posts/?number=5&fields=date,title,slug,status",
+                         timeout=20)
+        r.raise_for_status()
+        for p in r.json().get("posts", []):
+            if p.get("status") != "publish":
+                continue
+            if p.get("date", "").startswith(today_str):
+                log(f"Dedup: existing post for {today_str} → '{p.get('title')}' "
+                    f"(slug={p.get('slug')}). Skipping.")
+                return True
+        return False
+    except Exception as e:
+        log(f"Dedup check failed (non-fatal, proceeding): {e}")
+        return False
+
+
 def main():
     try:
+        # Skip if old cron already published today
         force = os.environ.get("RIVER_OVERRIDE", "").strip()
+        if not force and already_published_today():
+            log("Old cron beat us today; nothing to do.")
+            return
         dry = os.environ.get("DRY_RUN", "").lower() == "true"
         post = build_post(force_slug=force)
         log(f"Title: {post['title']}")
