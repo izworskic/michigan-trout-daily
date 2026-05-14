@@ -1,0 +1,45 @@
+name: Daily Trout Report
+
+on:
+  schedule:
+    # 13:12 UTC daily = 8:12 AM Eastern / 7:12 AM Central
+    # (cron uses UTC, no DST awareness; 13:12 hits between 7:12 ET in winter and 9:12 ET in summer.
+    #  Acceptable drift for a daily content cron.)
+    - cron: '12 13 * * *'
+  workflow_dispatch:
+    inputs:
+      river_override:
+        description: 'Force a specific river slug (skips rotation/recency)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Print the post but do not publish'
+        required: false
+        default: 'false'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Publish daily post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WP_TOKEN: ${{ secrets.WP_TOKEN }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          RIVER_OVERRIDE: ${{ github.event.inputs.river_override }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: python scripts/publish.py
