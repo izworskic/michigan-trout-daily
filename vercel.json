@@ -1,0 +1,28 @@
+{
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "troutdaily.chrisizworski.com"
+        }
+      ],
+      "destination": "https://daily.michigantroutreport.com/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "troutdaily.chrisizworski.com"
+        }
+      ],
+      "destination": "https://daily.michigantroutreport.com/:path*",
+      "permanent": true
+    }
+  ]
+}
+
