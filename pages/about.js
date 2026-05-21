@@ -32,7 +32,7 @@ export default function About() {
 
           <h2>The Data</h2>
           <p>Flow and temperature data comes directly from USGS stream gauges. Hatch timing is keyed to water temperature, not just calendar date, because that is how hatches actually work. A 45-degree April river and a 45-degree October river fish very differently, even if the same insects are technically in season.</p>
-          <p>The full river directory — 110+ rivers, historical conditions, hatch charts, and AI fly recommendations — lives at the <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener">Michigan Trout Report</a>. That is the data engine behind this site.</p>
+          <p>The full river directory — 110+ rivers, historical conditions, hatch charts, and AI fly recommendations — lives at the <a href="https://michigantroutreport.com" target="_blank" rel="noopener">Michigan Trout Report</a>. That is the data engine behind this site.</p>
 
           <h2>Who Writes This</h2>
           <p>Michigan Trout Daily is written by <a href={AUTHOR_URL} target="_blank" rel="noopener">{AUTHOR_NAME}</a>, a Michigan angler and the founder of the Michigan Trout Report. Reports are grounded in verified USGS data and Michigan hatch knowledge accumulated across decades of published entomological research and angling literature. Nothing is invented. If gauge data is unavailable, the report says so.</p>
@@ -40,7 +40,7 @@ export default function About() {
 
         <div className="article-footer">
           <Link href="/" className="btn-outline">&larr; All Reports</Link>
-          <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener" className="btn-primary">Michigan Trout Report &rarr;</a>
+          <a href="https://michigantroutreport.com" target="_blank" rel="noopener" className="btn-primary">Michigan Trout Report &rarr;</a>
         </div>
       </div>
     </>

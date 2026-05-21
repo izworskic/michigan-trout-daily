@@ -15,7 +15,7 @@ export default function ChrisIzworskiArchive({ posts }) {
           url: AUTHOR_URL,
           sameAs: [
             AUTHOR_URL,
-            'https://trout.chrisizworski.com',
+            'https://michigantroutreport.com',
             'https://troutdaily.chrisizworski.com',
             'https://gazette.chrisizworski.com',
             'https://freighterviewfarms.com',
@@ -80,7 +80,7 @@ export default function ChrisIzworskiArchive({ posts }) {
             Daily Michigan trout stream reports — {posts.length} entries.
           </p>
           <p style={{ fontSize: 15, color: '#555', lineHeight: 1.7 }}>
-            {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://trout.chrisizworski.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day.
+            {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://michigantroutreport.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day.
           </p>
         </header>
 
