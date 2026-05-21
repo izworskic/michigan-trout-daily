@@ -52,7 +52,7 @@ export default function Home({ posts }) {
           <h1 className="masthead-title">Michigan Trout Daily by Chris Izworski</h1>
           <p className="masthead-desc">One Michigan river, every morning. Live USGS conditions, what's hatching, and whether it's worth the drive.</p>
           <div className="masthead-btns">
-            <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener" className="btn-primary">Live River Data &rarr;</a>
+            <a href="https://michigantroutreport.com" target="_blank" rel="noopener" className="btn-primary">Live River Data &rarr;</a>
             <Link href="/about" className="btn-outline">About This Site</Link>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function Home({ posts }) {
             <div className="sidebar-label">What This Is</div>
             <div className="sidebar-title">Before you load the truck, read this.</div>
             <div className="sidebar-text">Every morning a report covers one Michigan trout stream: real USGS flow and temperature, what insects are hatching, what to tie on, and where to park. Nothing invented.</div>
-            <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener" className="btn-primary" style={{ fontSize: '11px' }}>Full River Directory &rarr;</a>
+            <a href="https://michigantroutreport.com" target="_blank" rel="noopener" className="btn-primary" style={{ fontSize: '11px' }}>Full River Directory &rarr;</a>
           </div>
 
           <div className="sidebar-box">
@@ -111,7 +111,7 @@ export default function Home({ posts }) {
 
           <div className="sidebar-box-green">
             <div className="sidebar-label">Written By</div>
-            <div className="sidebar-text"><a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#7ec8a0', fontWeight: 600 }}>{AUTHOR_NAME}</a> — Michigan angler, founder of the Michigan Trout Report. Live data for 110+ rivers at <a href="https://trout.chrisizworski.com" target="_blank" rel="noopener">trout.chrisizworski.com</a>.</div>
+            <div className="sidebar-text"><a href={AUTHOR_URL} target="_blank" rel="noopener" style={{ color: '#7ec8a0', fontWeight: 600 }}>{AUTHOR_NAME}</a> — Michigan angler, founder of the Michigan Trout Report. Live data for 110+ rivers at <a href="https://michigantroutreport.com" target="_blank" rel="noopener">michigantroutreport.com</a>.</div>
           </div>
         </aside>
       </div>
