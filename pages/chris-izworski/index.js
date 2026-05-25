@@ -25,7 +25,7 @@ export default function ChrisIzworskiArchive({ posts }) {
       },
       {
         '@type': 'CollectionPage',
-        url: `${SITE_URL}/chris-izworski/`,
+        url: `${SITE_URL}/chris-izworski`,
         name: `Daily Michigan Trout Reports by ${AUTHOR_NAME}`,
         description: `Complete archive of daily Michigan trout stream reports by ${AUTHOR_NAME}.`,
         author: { '@id': 'https://chrisizworski.com/#person' },
@@ -45,7 +45,7 @@ export default function ChrisIzworskiArchive({ posts }) {
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: AUTHOR_NAME, item: AUTHOR_URL },
           { '@type': 'ListItem', position: 2, name: 'Michigan Trout Daily', item: SITE_URL },
-          { '@type': 'ListItem', position: 3, name: 'Daily Reports Archive', item: `${SITE_URL}/chris-izworski/` },
+          { '@type': 'ListItem', position: 3, name: 'Daily Reports Archive', item: `${SITE_URL}/chris-izworski` },
         ],
       },
     ],
@@ -57,12 +57,12 @@ export default function ChrisIzworskiArchive({ posts }) {
         <title>{`${AUTHOR_NAME} — Daily Michigan Trout Reports Archive | Michigan Trout Daily`}</title>
         <meta name="description" content={`Complete archive of daily Michigan trout stream conditions and hatch reports written by ${AUTHOR_NAME}. ${posts.length} reports from across Michigan rivers.`} />
         <meta name="author" content={AUTHOR_NAME} />
-        <link rel="canonical" href={`${SITE_URL}/chris-izworski/`} />
+        <link rel="canonical" href={`${SITE_URL}/chris-izworski`} />
         <link rel="author" href={AUTHOR_URL} />
         <meta property="og:type" content="profile" />
         <meta property="og:title" content={`${AUTHOR_NAME} — Daily Michigan Trout Reports`} />
         <meta property="og:description" content={`${posts.length} daily Michigan trout reports by ${AUTHOR_NAME}.`} />
-        <meta property="og:url" content={`${SITE_URL}/chris-izworski/`} />
+        <meta property="og:url" content={`${SITE_URL}/chris-izworski`} />
         <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
