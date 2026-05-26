@@ -20,6 +20,7 @@ export default function ChrisIzworskiArchive({ posts }) {
             'https://gazette.chrisizworski.com',
             'https://freighterviewfarms.com',
             'https://www.wikidata.org/wiki/Q138283432',
+            'https://www.youtube.com/@izworskic',
           ],
         },
       },
@@ -80,7 +81,7 @@ export default function ChrisIzworskiArchive({ posts }) {
             Daily Michigan trout stream reports — {posts.length} entries.
           </p>
           <p style={{ fontSize: 15, color: '#555', lineHeight: 1.7 }}>
-            {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://michigantroutreport.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day.
+            {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://michigantroutreport.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day. Field video from the same rivers and Great Lakes water appears on <a href="https://www.youtube.com/@izworskic">{AUTHOR_NAME}&apos;s YouTube channel</a>.
           </p>
         </header>
 
