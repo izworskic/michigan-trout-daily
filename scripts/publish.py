@@ -1,5 +1,5 @@
 """
-Michigan Trout Daily — autonomous publisher.
+Michigan Trout Daily: autonomous publisher.
 
 Runs once daily via GitHub Actions cron. Each run:
   1. Pulls last 14 posts from WP.com to learn which rivers were covered recently
@@ -509,7 +509,7 @@ def main():
         log(f"Title: {post['title']}")
         log(f"Slug: {post['slug']}")
         if dry:
-            log("DRY RUN — not publishing")
+            log("DRY RUN: not publishing")
             print(post["body"][:2000])
             return
         result = publish_to_wp(post)

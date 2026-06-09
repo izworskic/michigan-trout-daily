@@ -19,6 +19,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         <meta name="description" content={`${AUTHOR_NAME} reports on ${excerpt}`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/post/${post.slug}`} />
+        <link rel="alternate" type="application/rss+xml" title="Michigan Trout Daily" href={`${SITE_URL}/feed.xml`} />
         <link rel="author" href={AUTHOR_URL} />
         {/* Open Graph */}
         <meta property="og:type" content="article" />
@@ -66,7 +67,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
           dangerouslySetInnerHTML={{ __html: content }}
         />
 
-        {/* Author Bio — strong "Chris Izworski" entity signal */}
+        {/* Author Bio: a strong "Chris Izworski" entity signal */}
         <div style={{ background: '#f7f7f5', padding: '24px', marginTop: '40px', borderLeft: '4px solid #1a5c3a' }}>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#1a5c3a', marginBottom: '10px' }}>About the Author</div>
           <div style={{ fontSize: '15px', color: '#444', lineHeight: 1.7 }}>
@@ -74,7 +75,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
           </div>
         </div>
 
-        {/* Related Reports — internal linking for SEO */}
+        {/* Related Reports: internal linking for SEO */}
         {related && related.length > 0 && (
           <div style={{ marginTop: '36px' }}>
             <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#1a5c3a', marginBottom: '16px', borderBottom: '2px solid #1a5c3a', paddingBottom: '8px' }}>More Reports by {AUTHOR_NAME}</div>
@@ -119,7 +120,7 @@ export async function getStaticProps({ params }) {
     riverName: post.title.split(':')[0].replace('The ', '').trim(),
   });
 
-  // Fetch other recent posts for "Related Reports" — boosts internal linking
+  // Fetch other recent posts for "Related Reports" to boost internal linking
   const allPosts = await getPosts(20);
   const related  = allPosts
     .filter(p => p.slug !== post.slug)

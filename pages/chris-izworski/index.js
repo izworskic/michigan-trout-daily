@@ -55,13 +55,14 @@ export default function ChrisIzworskiArchive({ posts }) {
   return (
     <>
       <Head>
-        <title>{`${AUTHOR_NAME} — Daily Michigan Trout Reports Archive | Michigan Trout Daily`}</title>
+        <title>{`${AUTHOR_NAME}: Daily Michigan Trout Reports Archive | Michigan Trout Daily`}</title>
         <meta name="description" content={`Complete archive of daily Michigan trout stream conditions and hatch reports written by ${AUTHOR_NAME}. ${posts.length} reports from across Michigan rivers.`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/chris-izworski`} />
+        <link rel="alternate" type="application/rss+xml" title="Michigan Trout Daily" href={`${SITE_URL}/feed.xml`} />
         <link rel="author" href={AUTHOR_URL} />
         <meta property="og:type" content="profile" />
-        <meta property="og:title" content={`${AUTHOR_NAME} — Daily Michigan Trout Reports`} />
+        <meta property="og:title" content={`${AUTHOR_NAME}: Daily Michigan Trout Reports`} />
         <meta property="og:description" content={`${posts.length} daily Michigan trout reports by ${AUTHOR_NAME}.`} />
         <meta property="og:url" content={`${SITE_URL}/chris-izworski`} />
         <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
@@ -78,7 +79,7 @@ export default function ChrisIzworskiArchive({ posts }) {
             {AUTHOR_NAME}
           </h1>
           <p style={{ fontSize: 18, color: '#444', fontStyle: 'italic', marginBottom: 8 }}>
-            Daily Michigan trout stream reports — {posts.length} entries.
+            Daily Michigan trout stream reports: {posts.length} entries.
           </p>
           <p style={{ fontSize: 15, color: '#555', lineHeight: 1.7 }}>
             {AUTHOR_NAME} is a Michigan angler and the founder of the <a href="https://michigantroutreport.com">Michigan Trout Report</a>. This page is the complete archive of his daily stream condition reports, published every morning during trout season. Each report covers one Michigan river: live USGS gauge data, what is hatching, fly recommendations, and whether the river is worth the drive that day. Field video from the same rivers and Great Lakes water appears on <a href="https://www.youtube.com/@izworskic">{AUTHOR_NAME}&apos;s YouTube channel</a>.
