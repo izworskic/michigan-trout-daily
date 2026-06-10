@@ -1,0 +1,13 @@
+# Michigan Trout Daily
+> A daily Michigan trout stream report by Chris Izworski: one river each day with live USGS flow, water temperature, weather, and hatch conditions.
+
+Reports are data-driven from live gauges and published every morning.
+
+## Key pages
+- [Latest reports](https://daily.michigantroutreport.com/): the current daily report and recent archive
+- [RSS feed](https://daily.michigantroutreport.com/feed.xml): the last 30 reports
+- [Report archive](https://daily.michigantroutreport.com/chris-izworski): all reports by Chris Izworski
+- [About](https://daily.michigantroutreport.com/about)
+
+## Author
+Chris Izworski (https://chrisizworski.com), Michigan trout angler and outdoor writer. The full river directory with 110+ rivers lives at Michigan Trout Report (https://michigantroutreport.com).
