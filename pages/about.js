@@ -6,7 +6,7 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>About Michigan Trout Daily, by {AUTHOR_NAME}</title>
+        <title>{`About Michigan Trout Daily, by ${AUTHOR_NAME}`}</title>
         <meta name="description" content={`Michigan Trout Daily publishes daily trout stream conditions and hatch reports for Michigan anglers. Written by ${AUTHOR_NAME}.`} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/about`} />
