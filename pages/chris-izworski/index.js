@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPosts, getExcerpt, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
+import { getPostSummaries, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
 
 export default function ChrisIzworskiArchive({ posts }) {
   const schema = {
@@ -98,7 +98,7 @@ export default function ChrisIzworskiArchive({ posts }) {
                 </Link>
               </h2>
               <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>
-                {getExcerpt(post.excerpt || post.content, 180)}
+                {post.excerpt}
               </p>
             </li>
           ))}
@@ -109,6 +109,6 @@ export default function ChrisIzworskiArchive({ posts }) {
 }
 
 export async function getStaticProps() {
-  const posts = await getPosts(100);
+  const posts = await getPostSummaries(100, { excerptLength: 180 });
   return { props: { posts: posts || [] }, revalidate: 3600 };
 }

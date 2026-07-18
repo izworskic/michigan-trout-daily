@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPosts, getExcerpt, getRegion, formatDate, siteSchema, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from '../lib/seo';
+import { getPostSummaries, formatDate, siteSchema, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from '../lib/seo';
 
 const SEASON_NOTE = (() => {
   const m = new Date().getMonth() + 1;
@@ -74,18 +74,16 @@ export default function Home({ posts }) {
             <p style={{ color: '#777', fontStyle: 'italic' }}>The first reports will appear here tomorrow morning.</p>
           ) : (
             posts.map(post => {
-              const region  = getRegion(post.tags);
-              const excerpt = getExcerpt(post.excerpt || post.content, 220);
               return (
-                <article key={post.ID} className="post-card">
+                <article key={post.slug} className="post-card">
                   <div className="post-meta">
                     <span className="post-date">{formatDate(post.date)}</span>
-                    {region && <span className="post-region">{region}</span>}
+                    {post.region && <span className="post-region">{post.region}</span>}
                   </div>
                   <h2 className="post-title">
                     <Link href={`/post/${post.slug}`}>{post.title}</Link>
                   </h2>
-                  <p className="post-excerpt">{excerpt}</p>
+                  <p className="post-excerpt">{post.excerpt}</p>
                   <Link href={`/post/${post.slug}`} className="read-more">Read the full report &rarr;</Link>
                 </article>
               );
@@ -121,7 +119,10 @@ export default function Home({ posts }) {
 }
 
 export async function getStaticProps() {
-  const posts = await getPosts(20);
+  const posts = await getPostSummaries(20, {
+    excerptLength: 220,
+    includeRegion: true,
+  });
   return {
     props: { posts },
     revalidate: 3600, // Rebuild every hour to pick up new posts
