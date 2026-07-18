@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node scripts/check-seo.mjs"
+    "test": "node scripts/check-seo.mjs",
+    "check:payload": "node scripts/check-page-payloads.mjs"
   },
   "dependencies": {
     "next": "16.2.4",
