@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { getExcerpt, getMetaDescription, getPostExcerpt } from '../lib/excerpt.mjs';
 
 const aboutPage = readFileSync('pages/about.js', 'utf8');
 const homePage = readFileSync('pages/index.js', 'utf8');
@@ -24,8 +25,8 @@ assert.ok(
   'Archive must return lean report summaries',
 );
 assert.ok(
-  seoHelpers.includes('excerpt: getExcerpt(post.excerpt || post.content, excerptLength)'),
-  'Report summaries must preserve the existing excerpt fallback',
+  seoHelpers.includes('excerpt: getPostExcerpt(post, excerptLength)'),
+  'Report summaries must use the tested WordPress excerpt fallback',
 );
 assert.ok(
   !homePage.includes('post.content') && !homePage.includes('post.tags'),
@@ -34,6 +35,61 @@ assert.ok(
 assert.ok(
   !archivePage.includes('post.content') && !archivePage.includes('post.tags'),
   'Archive must render only precomputed summary fields',
+);
+
+const wordpressExcerpt = '<p>By Chris Izworski &nbsp;|&nbsp; Michigan Trout Daily &nbsp;|&nbsp; July 18, 2026 Chris Izworski, reporting from Michigan on the current state of the Black River this Saturday morning. The gauge reads 21 cubic feet per second and the clarity is exceptional. [&hellip;]</p>';
+const cleanedExcerpt = getExcerpt(wordpressExcerpt, 220);
+
+assert.ok(
+  cleanedExcerpt.startsWith('Chris Izworski, reporting from Michigan'),
+  'WordPress excerpts must retain the report after removing the dated byline',
+);
+assert.ok(
+  !cleanedExcerpt.startsWith('By Chris Izworski'),
+  'Card copy must not repeat the publisher byline prefix',
+);
+assert.ok(
+  cleanedExcerpt.includes('clarity is exceptional.'),
+  'WordPress trailing excerpt markers must be removed without deleting report copy',
+);
+
+assert.equal(
+  getExcerpt('<p>The UP&#8217;s rivers are fishing well.</p>'),
+  'The UP’s rivers are fishing well.',
+  'Numeric WordPress entities must remain readable',
+);
+
+assert.equal(
+  getExcerpt('<p>Michigan Trout Daily reports verified conditions.</p>'),
+  'Michigan Trout Daily reports verified conditions.',
+  'Non-byline mentions of the publication must be retained',
+);
+
+assert.equal(
+  getPostExcerpt({
+    excerpt: '<p>By Chris Izworski | Michigan Trout Daily | July 18, 2026</p>',
+    content: '<p>By Chris Izworski | Michigan Trout Daily | July 18, 2026</p><p>Stable flow and cool water make this a good morning window.</p>',
+  }),
+  'Stable flow and cool water make this a good morning window.',
+  'Full post content must provide a fallback when WordPress returns a byline-only excerpt',
+);
+
+const truncatedExcerpt = getExcerpt(
+  '<p>This deliberately long report sentence verifies that descriptions stop cleanly at a word boundary instead of cutting through a word in search results.</p>',
+  80,
+);
+assert.ok(truncatedExcerpt.endsWith('…'), 'Long excerpts must use one clean ellipsis');
+assert.ok(!truncatedExcerpt.endsWith(' ...'), 'Long excerpts must not append duplicate periods');
+
+assert.equal(
+  getMetaDescription('Chris Izworski, reporting from Michigan on the Black River.'),
+  'Chris Izworski, reporting from Michigan on the Black River.',
+  'Article descriptions must not repeat the author name',
+);
+assert.equal(
+  getMetaDescription('Stable flows make this a good morning window.'),
+  'Chris Izworski reports: Stable flows make this a good morning window.',
+  'Article descriptions must retain the author signal when the report copy omits it',
 );
 
 console.log('SEO checks passed.');

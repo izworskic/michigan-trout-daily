@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPosts, getPost, cleanContent, getExcerpt, articleSchema, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
+import { getPosts, getPost, cleanContent, getMetaDescription, getPostExcerpt, articleSchema, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
 
-export default function PostPage({ post, schema, excerpt, related }) {
+export default function PostPage({ post, schema, description, related }) {
   if (!post) return <div style={{ padding: '60px 24px', textAlign: 'center', color: '#777' }}>Report not found.</div>;
 
   // Clean cron byline and ALL JSON-LD artifacts WordPress encoded into content
@@ -16,7 +16,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
     <>
       <Head>
         <title>{`${AUTHOR_NAME}: ${post.title} | Michigan Trout Daily`}</title>
-        <meta name="description" content={`${AUTHOR_NAME} reports on ${excerpt}`} />
+        <meta name="description" content={description} />
         <meta name="author" content={AUTHOR_NAME} />
         <link rel="canonical" href={`${SITE_URL}/post/${post.slug}`} />
         <link rel="alternate" type="application/rss+xml" title="Michigan Trout Daily" href={`${SITE_URL}/feed.xml`} />
@@ -24,7 +24,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         {/* Open Graph */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={`${AUTHOR_NAME}: ${post.title}`} />
-        <meta property="og:description" content={excerpt} />
+        <meta property="og:description" content={description} />
         <meta property="og:url" content={`${SITE_URL}/post/${post.slug}`} />
         <meta property="og:site_name" content={SITE_NAME} />
         <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
@@ -35,7 +35,7 @@ export default function PostPage({ post, schema, excerpt, related }) {
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${AUTHOR_NAME}: ${post.title}`} />
-        <meta name="twitter:description" content={excerpt} />
+        <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
         {/* Article Schema */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
@@ -111,12 +111,13 @@ export async function getStaticProps({ params }) {
   const post = await getPost(params.slug);
   if (post.error) return { notFound: true };
 
-  const excerpt = getExcerpt(post.excerpt || post.content, 200);
+  const excerpt = getPostExcerpt(post, 200);
+  const description = getMetaDescription(excerpt);
   const schema  = articleSchema({
     title:     post.title,
     slug:      post.slug,
     date:      post.date,
-    excerpt,
+    excerpt: description,
     riverName: post.title.split(':')[0].replace('The ', '').trim(),
   });
 
@@ -128,7 +129,7 @@ export async function getStaticProps({ params }) {
     .map(p => ({ slug: p.slug, title: p.title, date: p.date }));
 
   return {
-    props: { post, schema, excerpt, related },
+    props: { post, schema, description, related },
     revalidate: 86400,
   };
 }
