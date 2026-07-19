@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { getExcerpt, getMetaDescription, getPostExcerpt } from '../lib/excerpt.mjs';
+import { buildSitemap } from '../lib/sitemap.mjs';
 
 const aboutPage = readFileSync('pages/about.js', 'utf8');
 const homePage = readFileSync('pages/index.js', 'utf8');
@@ -91,5 +92,42 @@ assert.equal(
   'Chris Izworski reports: Stable flows make this a good morning window.',
   'Article descriptions must retain the author signal when the report copy omits it',
 );
+
+const sitemap = buildSitemap('https://daily.michigantroutreport.com/', [
+  {
+    slug: 'older-report',
+    date: '2026-07-17T09:31:36-04:00',
+    modified: '2026-07-17T10:00:00-04:00',
+  },
+  {
+    slug: 'newer-&-report',
+    date: '2026-07-18T10:31:05-04:00',
+  },
+]);
+
+assert.equal(
+  (sitemap.match(/<url>/g) || []).length,
+  5,
+  'Sitemap must include three index pages plus every report',
+);
+assert.equal(
+  (sitemap.match(/<lastmod>/g) || []).length,
+  4,
+  'Sitemap must date rolling pages and reports without inventing an About-page date',
+);
+assert.ok(
+  sitemap.includes('<lastmod>2026-07-18T14:31:05.000Z</lastmod>'),
+  'Rolling pages must use the newest report timestamp',
+);
+assert.ok(
+  sitemap.includes('<lastmod>2026-07-17T14:00:00.000Z</lastmod>'),
+  'Report URLs must prefer the WordPress modification timestamp',
+);
+assert.ok(
+  sitemap.includes('/post/newer-&amp;-report'),
+  'Sitemap URLs must be XML escaped',
+);
+assert.ok(!sitemap.includes('<changefreq>'), 'Sitemap must not emit ignored changefreq hints');
+assert.ok(!sitemap.includes('<priority>'), 'Sitemap must not emit ignored priority hints');
 
 console.log('SEO checks passed.');
