@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPosts, getPost, cleanContent, getMetaDescription, getPostExcerpt, articleSchema, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
+import { getPosts, getPost, cleanContent, getMetaDescription, getPostExcerpt, articleSchema, formatDate, hasRealBody, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
 
 export default function PostPage({ post, schema, description, related }) {
   if (!post) return <div style={{ padding: '60px 24px', textAlign: 'center', color: '#777' }}>Report not found.</div>;
@@ -110,6 +110,9 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const post = await getPost(params.slug);
   if (post.error) return { notFound: true };
+  // An empty stub must not serve a 200 with no article in it. Returning notFound
+  // keeps thin content out of the index instead of publishing a hollow page.
+  if (!hasRealBody(post)) return { notFound: true, revalidate: 3600 };
 
   const excerpt = getPostExcerpt(post, 200);
   const description = getMetaDescription(excerpt);
