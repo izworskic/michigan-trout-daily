@@ -475,22 +475,65 @@ def indexnow_ping(url):
         log(f"IndexNow ping failed: {e}")
 
 
+# A real report is 500 to 1300 words (see validate()). Anything under this is a
+# stub, not an article, and must never be allowed to stand as the day's post.
+MIN_REAL_WORDS = 250
+
+
+def trash_post(post_id):
+    """Move a WordPress post to trash. Reversible from the WP admin."""
+    token = os.environ.get("WP_TOKEN", "").strip()
+    if not token:
+        log(f"Cannot trash post {post_id}: WP_TOKEN not set")
+        return False
+    r = requests.post(
+        f"{WP_API}/posts/{post_id}/delete",
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=30,
+    )
+    if r.status_code == 200:
+        log(f"Trashed empty stub post {post_id}")
+        return True
+    log(f"Failed to trash post {post_id}: {r.status_code} {r.text[:200]}")
+    return False
+
+
 def already_published_today():
-    """Skip if the old (external) cron already posted today.
-    Avoids duplicate posts now that both crons are alive."""
+    """Decide whether today already has a real post.
+
+    An external publisher (the "old cron") also posts to this site and is the
+    usual source of the daily report. On 2026-07-22 it began publishing posts
+    with a placeholder title and a completely empty body, and because this
+    check only looked at existence and not content, it deferred to those stubs
+    for three days running and the site went stale while every run reported
+    success.
+
+    So existence is not enough. A post only counts as today's report if it
+    actually contains an article. If today's post is an empty stub, it gets
+    trashed and this returns False so a real report is generated to replace it.
+    """
     et = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4)))
     today_str = et.strftime("%Y-%m-%d")
     try:
-        r = requests.get(f"{WP_API}/posts/?number=5&fields=date,title,slug,status",
-                         timeout=20)
+        r = requests.get(
+            f"{WP_API}/posts/?number=5&fields=ID,date,title,slug,status,content",
+            timeout=30)
         r.raise_for_status()
         for p in r.json().get("posts", []):
             if p.get("status") != "publish":
                 continue
-            if p.get("date", "").startswith(today_str):
-                log(f"Dedup: existing post for {today_str} → '{p.get('title')}' "
-                    f"(slug={p.get('slug')}). Skipping.")
+            if not p.get("date", "").startswith(today_str):
+                continue
+            plain = re.sub(r"<[^>]+>", " ", p.get("content") or "")
+            words = len(re.sub(r"\s+", " ", plain).split())
+            if words >= MIN_REAL_WORDS:
+                log(f"Dedup: real post already exists for {today_str} → "
+                    f"'{p.get('title')}' ({words} words). Skipping.")
                 return True
+            log(f"Found EMPTY stub for {today_str} → '{p.get('title')}' "
+                f"({words} words, slug={p.get('slug')}). Replacing it.")
+            trash_post(p.get("ID"))
+            return False
         return False
     except Exception as e:
         log(f"Dedup check failed (non-fatal, proceeding): {e}")
