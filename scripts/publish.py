@@ -16,6 +16,7 @@ If anything fails, opens a GitHub issue tagged 'cron-failure' so it's visible.
 
 import json, os, sys, time, random, re, traceback
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 import requests
 
 # ─── Config ─────────────────────────────────────────────────────────────────
@@ -27,6 +28,7 @@ AUTHOR_URL = "https://chrisizworski.com"
 CLAUDE_MODEL = "claude-sonnet-4-5"  # solid prose, cost-efficient
 ANTHROPIC_API = "https://api.anthropic.com/v1/messages"
 RECENCY_DAYS = 14
+MICHIGAN_TZ = ZoneInfo("America/Detroit")
 
 # Curated rotation. Each entry: slug, display name, USGS gauge, NWS forecast point, region.
 # NWS points are (lat,lon) pairs that the api.weather.gov /points endpoint resolves.
@@ -356,7 +358,7 @@ def validate(body_html):
 # ─── Build + publish ─────────────────────────────────────────────────────────
 
 def build_post(force_slug="", today=None):
-    today = today or datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4)))
+    today = today or datetime.now(MICHIGAN_TZ)
     is_sunday = today.weekday() == 6
     month = today.month
     hatch_note = HATCH_NOTES.get(month, "seasonal hatches")
@@ -432,7 +434,7 @@ def build_post(force_slug="", today=None):
     full_body = byline + body
     return {
         "title": title, "slug": slug, "body": full_body, "tags": tags,
-        "post_date": today.strftime("%Y-%m-%dT09:12:00-04:00"),
+        "post_date": today.replace(hour=6, minute=17, second=0, microsecond=0).isoformat(),
     }
 
 def publish_to_wp(post):
@@ -512,7 +514,7 @@ def already_published_today():
     actually contains an article. If today's post is an empty stub, it gets
     trashed and this returns False so a real report is generated to replace it.
     """
-    et = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4)))
+    et = datetime.now(MICHIGAN_TZ)
     today_str = et.strftime("%Y-%m-%d")
     try:
         r = requests.get(
@@ -564,7 +566,7 @@ def main():
         tb = traceback.format_exc()
         log(f"FAILURE: {e}\n{tb}")
         open_failure_issue(
-            f"Daily publish failure: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+            f"Daily publish failure: {datetime.now(MICHIGAN_TZ).strftime('%Y-%m-%d')}",
             f"## Cron failure\n\n```\n{tb}\n```\n\n"
             f"Check the workflow run for full logs. The site will be stale until this is fixed.",
         )

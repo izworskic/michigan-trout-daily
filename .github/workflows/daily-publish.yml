@@ -2,10 +2,13 @@ name: Daily Trout Report
 
 on:
   schedule:
-    # 13:12 UTC daily = 8:12 AM Eastern / 7:12 AM Central
-    # (cron uses UTC, no DST awareness; 13:12 hits between 7:12 ET in winter and 9:12 ET in summer.
-    #  Acceptable drift for a daily content cron.)
-    - cron: '12 13 * * *'
+    # The Vercel publisher targets the 4-5am EST / 5-6am EDT hour. These are
+    # timezone-aware safety runs after it, with a second chance for queue delay
+    # or a transient upstream failure. WordPress content checks make both safe.
+    - cron: '17 6 * * *'
+      timezone: 'America/Detroit'
+    - cron: '47 7 * * *'
+      timezone: 'America/Detroit'
   workflow_dispatch:
     inputs:
       river_override:
@@ -17,9 +20,14 @@ on:
         required: false
         default: 'false'
 
+concurrency:
+  group: michigan-trout-daily-publisher
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       issues: write
     steps:
@@ -43,3 +51,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: python scripts/publish.py
+
+      - name: Verify today's real report is live
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/verify_today.py
