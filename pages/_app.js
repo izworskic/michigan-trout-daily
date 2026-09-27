@@ -1,3 +1,4 @@
+import Script from "next/script";
 import '../styles/globals.css';
 import Link from 'next/link';
 
@@ -37,6 +38,7 @@ export default function App({ Component, pageProps }) {
       <SiteHeader />
       <Component {...pageProps} />
       <SiteFooter />
+      <Script id="ci-network-ads-v1" src="https://chrisizworski.com/assets/network-ads-v1.js" strategy="afterInteractive" />
     </>
   );
 }
