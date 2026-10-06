@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPostSummaries, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from '../../lib/seo';
+import { getPostSummaries, formatDate, SITE_URL, AUTHOR_NAME, AUTHOR_URL, PERSON_URL, SITE_NAME } from '../../lib/seo';
 
 export default function ChrisIzworskiArchive({ posts }) {
   const schema = {
@@ -12,7 +12,7 @@ export default function ChrisIzworskiArchive({ posts }) {
           '@type': 'Person',
           '@id': 'https://chrisizworski.com/#person',
           name: AUTHOR_NAME,
-          url: AUTHOR_URL,
+          url: PERSON_URL,
           sameAs: [
             AUTHOR_URL,
             'https://michigantroutreport.com',
