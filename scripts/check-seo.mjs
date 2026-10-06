@@ -98,7 +98,7 @@ assert.deepEqual(article.publisher, { '@id': PERSON_ID }, 'article publisher mus
 assert.ok(readFileSync('pages/_app.js', 'utf8').includes('Built by Chris Izworski'), 'shared page body must show a visible creator credit');
 assert.ok(readFileSync('pages/_app.js', 'utf8').includes('href="https://chrisizworski.com/chris-izworski/"'), 'visible creator credit must link to the identity profile');
 assert.ok(aboutPage.includes("'@id': PERSON_ID") && aboutPage.includes('url: PERSON_URL'), 'AboutPage must define the canonical Person');
-assert.ok(archive.includes('url: PERSON_URL'), 'author archive Person url must be the canonical homepage');
+assert.ok(archivePage.includes('url: PERSON_URL'), 'author archive Person url must be the canonical homepage');
 
 assert.equal(
   getMetaDescription('Stable flows make this a good morning window.'),
