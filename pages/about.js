@@ -15,7 +15,8 @@ export default function About() {
           '@type': 'AboutPage',
           name: 'About Michigan Trout Daily',
           url: `${SITE_URL}/about`,
-          author: { '@type': 'Person', name: AUTHOR_NAME, url: AUTHOR_URL },
+          author: { '@type': 'Person', '@id': PERSON_ID, name: AUTHOR_NAME, url: PERSON_URL },
+          publisher: { '@id': PERSON_ID },
         })}} />
       </Head>
 
