@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { getExcerpt, getMetaDescription, getPostExcerpt } from '../lib/excerpt.mjs';
+import { articleSchema, siteSchema, PERSON_ID, PERSON_URL } from '../lib/seo.js';
 import { buildSitemap } from '../lib/sitemap.mjs';
 
 const aboutPage = readFileSync('pages/about.js', 'utf8');
@@ -87,6 +88,18 @@ assert.equal(
   'Chris Izworski, reporting from Michigan on the Black River.',
   'Article descriptions must not repeat the author name',
 );
+const site = siteSchema();
+assert.equal(site.author['@id'], PERSON_ID, 'homepage author must define the canonical Person');
+assert.equal(site.author.url, PERSON_URL, 'homepage Person url must be the canonical homepage');
+const article = articleSchema({ title: 'Test report', slug: 'test-report', date: '2026-10-06', excerpt: 'A report.', riverName: 'Au Sable River' });
+assert.equal(article.author['@id'], PERSON_ID, 'article author must use the canonical Person');
+assert.equal(article.author.url, PERSON_URL, 'article Person url must be the canonical homepage');
+assert.deepEqual(article.publisher, { '@id': PERSON_ID }, 'article publisher must resolve to the canonical Person');
+assert.ok(readFileSync('pages/_app.js', 'utf8').includes('Built by Chris Izworski'), 'shared page body must show a visible creator credit');
+assert.ok(readFileSync('pages/_app.js', 'utf8').includes('href="https://chrisizworski.com/chris-izworski/"'), 'visible creator credit must link to the identity profile');
+assert.ok(aboutPage.includes("'@id': PERSON_ID") && aboutPage.includes('url: PERSON_URL'), 'AboutPage must define the canonical Person');
+assert.ok(archive.includes('url: PERSON_URL'), 'author archive Person url must be the canonical homepage');
+
 assert.equal(
   getMetaDescription('Stable flows make this a good morning window.'),
   'Chris Izworski reports: Stable flows make this a good morning window.',
