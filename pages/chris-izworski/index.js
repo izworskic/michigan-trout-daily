@@ -30,6 +30,7 @@ export default function ChrisIzworskiArchive({ posts }) {
         name: `Daily Michigan Trout Reports by ${AUTHOR_NAME}`,
         description: `Complete archive of daily Michigan trout stream reports by ${AUTHOR_NAME}.`,
         author: { '@id': 'https://chrisizworski.com/#person' },
+        publisher: { '@id': 'https://chrisizworski.com/#person' },
         mainEntity: {
           '@type': 'ItemList',
           numberOfItems: posts.length,
