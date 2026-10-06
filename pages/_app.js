@@ -24,6 +24,7 @@ function SiteFooter() {
         <Link href="/about">About</Link>
         <a href="https://michigantroutreport.com/chris-izworski/" rel="noopener">Trout Report Profile</a>
         <a href="https://chrisizworski.com" target="_blank" rel="noopener">Chris Izworski</a>
+        <a href="https://chrisizworski.com/chris-izworski/" target="_blank" rel="noopener">Built by Chris Izworski</a>
       </nav>
     </footer>
   );

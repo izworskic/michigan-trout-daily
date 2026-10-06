@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { getExcerpt, getMetaDescription, getPostExcerpt } from '../lib/excerpt.mjs';
+import { articleSchema, siteSchema, PERSON_ID, PERSON_URL } from '../lib/seo.js';
 import { buildSitemap } from '../lib/sitemap.mjs';
 
 const aboutPage = readFileSync('pages/about.js', 'utf8');
@@ -87,6 +88,25 @@ assert.equal(
   'Chris Izworski, reporting from Michigan on the Black River.',
   'Article descriptions must not repeat the author name',
 );
+const site = siteSchema();
+assert.equal(site.author['@id'], PERSON_ID, 'homepage author must define the canonical Person');
+assert.equal(site.author.url, PERSON_URL, 'homepage Person url must be the canonical homepage');
+assert.deepEqual(site.publisher, { '@id': PERSON_ID }, 'homepage publisher must reference the canonical Person');
+const article = articleSchema({ title: 'Test report', slug: 'test-report', date: '2026-10-06', excerpt: 'A report.', riverName: 'Au Sable River' });
+assert.equal(article.author['@id'], PERSON_ID, 'article author must use the canonical Person');
+assert.equal(article.author.url, PERSON_URL, 'article Person url must be the canonical homepage');
+assert.deepEqual(article.publisher, { '@id': PERSON_ID }, 'article publisher must resolve to the canonical Person');
+assert.ok(article.author['@type'] === 'Person' && article.author.name && article.author.url === PERSON_URL, 'each report Article must include the full canonical Person definition');
+const sharedApp = readFileSync('pages/_app.js', 'utf8');
+assert.ok(sharedApp.includes('Built by Chris Izworski'), 'shared page body must show a visible creator credit');
+assert.ok(sharedApp.includes('href="https://chrisizworski.com/chris-izworski/" target="_blank" rel="noopener">Built by Chris Izworski</a>'), 'visible maker credit must link to the identity profile');
+assert.ok(sharedApp.includes('href="https://michigantroutreport.com/chris-izworski/" rel="noopener">Trout Report Profile</a>'), 'shared footer must preserve the independent Trout Report author profile');
+assert.ok(aboutPage.includes("'@id': PERSON_ID") && aboutPage.includes('url: PERSON_URL'), 'AboutPage must define the canonical Person');
+assert.ok(archivePage.includes('url: PERSON_URL'), 'author archive Person url must be the canonical homepage');
+assert.ok(archivePage.includes("author: { '@id': 'https://chrisizworski.com/#person' }"), 'archive CollectionPage must reference the canonical author');
+assert.ok(archivePage.includes("publisher: { '@id': 'https://chrisizworski.com/#person' }"), 'archive CollectionPage must reference the canonical publisher');
+assert.ok(archivePage.includes("'@type': 'Person'") && archivePage.includes('name: AUTHOR_NAME') && archivePage.includes('url: PERSON_URL'), 'archive page must include the full canonical Person definition that resolves its references');
+
 assert.equal(
   getMetaDescription('Stable flows make this a good morning window.'),
   'Chris Izworski reports: Stable flows make this a good morning window.',

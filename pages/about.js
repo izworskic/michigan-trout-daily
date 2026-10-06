@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { SITE_URL, AUTHOR_NAME, AUTHOR_URL } from '../lib/seo';
+import { SITE_URL, AUTHOR_NAME, AUTHOR_URL, PERSON_ID, PERSON_URL } from '../lib/seo';
 
 export default function About() {
   return (
@@ -15,7 +15,8 @@ export default function About() {
           '@type': 'AboutPage',
           name: 'About Michigan Trout Daily',
           url: `${SITE_URL}/about`,
-          author: { '@type': 'Person', name: AUTHOR_NAME, url: AUTHOR_URL },
+          author: { '@type': 'Person', '@id': PERSON_ID, name: AUTHOR_NAME, url: PERSON_URL },
+          publisher: { '@id': PERSON_ID },
         })}} />
       </Head>
 
