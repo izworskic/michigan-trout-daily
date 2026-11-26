@@ -9,6 +9,11 @@ on:
       timezone: 'America/Detroit'
     - cron: '47 7 * * *'
       timezone: 'America/Detroit'
+  push:
+    branches: [main]
+    paths:
+      - scripts/publish.py
+      - .github/workflows/daily-publish.yml
   workflow_dispatch:
     inputs:
       river_override:
@@ -43,6 +48,7 @@ jobs:
 
       - name: Publish daily post
         env:
+          FALL_ANTHROPIC_API_KEY: ${{ secrets.FALL_ANTHROPIC_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           WP_TOKEN: ${{ secrets.WP_TOKEN }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}

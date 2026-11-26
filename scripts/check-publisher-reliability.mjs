@@ -20,3 +20,6 @@ assert.match(verifier, /daily\.michigantroutreport\.com/);
 assert.match(verifier, /post\.get\("status"\) != "publish"/);
 
 console.log('Publisher reliability checks passed.');
+
+assert.match(workflow, /FALL_ANTHROPIC_API_KEY: \$\{\{ secrets\.FALL_ANTHROPIC_API_KEY \}\}/);
+assert.match(publisher, /def deterministic_report\(/);

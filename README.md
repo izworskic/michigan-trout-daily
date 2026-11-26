@@ -38,3 +38,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+## Publisher credentials and recovery
+
+Configure `FALL_ANTHROPIC_API_KEY` directly in this repository's Actions secrets with the authorized fall-color Anthropic credential. It is preferred; `ANTHROPIC_API_KEY` remains the secondary credential for an explicit authentication failure. GitHub repository secrets cannot be read or copied automatically across repositories. Never commit a key. If generation fails, a validated measured-data conditions brief is published only with recent USGS evidence; Sunday falls back to a single-river report instead of a fabricated statewide overview. The existing two scheduled runs remain. A reviewed publisher change on main also triggers one deduplicated production run. Existing WordPress and IndexNow credentials are unchanged.

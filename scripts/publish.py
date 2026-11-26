@@ -14,7 +14,8 @@ Runs once daily via GitHub Actions cron. Each run:
 If anything fails, opens a GitHub issue tagged 'cron-failure' so it's visible.
 """
 
-import json, os, sys, time, random, re, traceback
+import json, os, sys, time, random, re, traceback, math
+from html import escape
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 import requests
@@ -191,20 +192,35 @@ def fetch_usgs(gauge_id):
         r.raise_for_status()
         data = r.json()
         out = {}
+        now = datetime.now(timezone.utc)
         for ts in data.get("value", {}).get("timeSeries", []):
+            if ts.get("sourceInfo", {}).get("siteCode", [{}])[0].get("value") != gauge_id:
+                continue
             var = ts["variable"]["variableCode"][0]["value"]
-            values = ts["values"][0]["value"]
-            if not values:
+            field = {"00060": "flow_cfs", "00065": "gauge_ft"}.get(var)
+            if not field:
                 continue
-            v = values[-1].get("value")
-            try:
-                v = float(v)
-            except (TypeError, ValueError):
-                continue
-            if var == "00060":
-                out["flow_cfs"] = v
-            elif var == "00065":
-                out["gauge_ft"] = v
+            candidates = []
+            for group in ts.get("values", []):
+                for reading in group.get("value", []):
+                    try:
+                        value = float(reading["value"])
+                        observed = datetime.fromisoformat(reading["dateTime"])
+                        if observed.tzinfo is None or not math.isfinite(value):
+                            continue
+                        if value <= -9999 or (field == "flow_cfs" and value < 0):
+                            continue
+                        if not timedelta(0) <= now - observed <= timedelta(hours=24):
+                            continue
+                        candidates.append((observed, value))
+                    except (ValueError, TypeError, KeyError):
+                        continue
+            if candidates:
+                observed, value = max(candidates)
+                old = out.get(field + "_observed_at")
+                if old is None or observed > datetime.fromisoformat(old):
+                    out[field] = value
+                    out[field + "_observed_at"] = observed.isoformat()
         return out
     except Exception as e:
         log(f"USGS fetch failed for {gauge_id}: {e}")
@@ -222,10 +238,23 @@ def fetch_nws(lat, lon):
         # 2. fetch forecast
         r = requests.get(fc_url, headers=headers, timeout=20)
         r.raise_for_status()
-        periods = r.json()["properties"]["periods"][:3]
-        return [{"name": p["name"], "temp": p["temperature"],
+        props = r.json()["properties"]
+        issued = datetime.fromisoformat(props["generatedAt"])
+        now = datetime.now(timezone.utc)
+        if issued.tzinfo is None or not timedelta(0) <= now - issued <= timedelta(hours=12):
+            return []
+        periods = []
+        for p in props["periods"]:
+            end = datetime.fromisoformat(p["endTime"])
+            if end.tzinfo is None or end <= now:
+                continue
+            periods.append({"name": p["name"], "temp": p["temperature"],
                  "wind": p["windSpeed"], "short": p["shortForecast"],
-                 "detailed": p["detailedForecast"]} for p in periods]
+                 "detailed": p["detailedForecast"], "unit": p.get("temperatureUnit"),
+                 "start": p["startTime"], "end": p["endTime"], "issued": issued.isoformat()})
+            if len(periods) == 3:
+                break
+        return periods
     except Exception as e:
         log(f"NWS fetch failed for {lat},{lon}: {e}")
         return []
@@ -305,32 +334,45 @@ def season_for(month):
             return note
     return "the current season"
 
+class GenerationUnavailable(RuntimeError):
+    """Provider failed; a source-grounded report can still be generated."""
+
+
 def claude_generate(system, user):
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError(
-            "ANTHROPIC_API_KEY secret is not set on the repository. "
-            "Add it at: Settings > Secrets and variables > Actions > New repository secret. "
-            "Name: ANTHROPIC_API_KEY  Value: your key from console.anthropic.com")
-    r = requests.post(
-        ANTHROPIC_API,
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        json={
-            "model": CLAUDE_MODEL,
-            "max_tokens": 2400,
-            "system": system,
-            "messages": [{"role": "user", "content": user}],
-        },
-        timeout=120,
-    )
-    if r.status_code != 200:
-        raise RuntimeError(f"Anthropic API {r.status_code}: {r.text[:500]}")
-    data = r.json()
-    return "".join(block["text"] for block in data["content"] if block["type"] == "text")
+    # Prefer the explicitly configured fall-color credential, then the existing key.
+    # Never log keys or provider response bodies. Only retry with a different key
+    # on explicit authentication failure, not after a potentially billable request.
+    keys = []
+    for name in ("FALL_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"):
+        key = os.environ.get(name, "").strip()
+        if key and all(key != previous for _, previous in keys):
+            keys.append((name, key))
+    for name, key in keys:
+        try:
+            r = requests.post(
+                ANTHROPIC_API,
+                headers={"x-api-key": key, "anthropic-version": "2023-06-01",
+                         "content-type": "application/json"},
+                json={"model": CLAUDE_MODEL, "max_tokens": 2400, "system": system,
+                      "messages": [{"role": "user", "content": user}]},
+                timeout=120,
+            )
+        except requests.RequestException as exc:
+            raise GenerationUnavailable("Anthropic transport unavailable") from exc
+        if r.status_code in (401, 403):
+            log(f"{name}: authentication rejected (HTTP {r.status_code})")
+            continue
+        if r.status_code != 200:
+            raise GenerationUnavailable(f"Anthropic HTTP {r.status_code}")
+        try:
+            body = "".join(block["text"] for block in r.json()["content"]
+                           if block["type"] == "text")
+            validate(body)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise GenerationUnavailable("Anthropic returned an invalid report") from exc
+        return body
+    raise GenerationUnavailable("No configured Anthropic credential authenticated")
+
 
 # ─── Validation ──────────────────────────────────────────────────────────────
 
@@ -357,7 +399,73 @@ def validate(body_html):
 
 # ─── Build + publish ─────────────────────────────────────────────────────────
 
-def build_post(force_slug="", today=None):
+def deterministic_report(river, usgs, nws, today):
+    """Publish a measured conditions brief, not invented field observations."""
+    name = escape(river["name"])
+    region = escape(river["region"])
+    station = escape(river["gauge"])
+    fresh = []
+    for key, label, unit in (("flow_cfs", "Discharge", "cubic feet per second"),
+                             ("gauge_ft", "Gauge height", "feet")):
+        value = usgs.get(key)
+        stamp = usgs.get(key + "_observed_at")
+        if isinstance(value, (int, float)) and math.isfinite(value) and stamp:
+            measured = datetime.fromisoformat(stamp).astimezone(MICHIGAN_TZ)
+            fresh.append(f"{label}: {value:,.2f} {unit}, measured "
+                         f"{measured.strftime('%B %-d at %-I:%M %p %Z')}.")
+    if not fresh:
+        raise RuntimeError("No recent measured USGS conditions; refusing to publish fallback")
+    forecasts = []
+    for p in nws:
+        if p.get("unit") == "F" and all(p.get(k) for k in ("name", "short", "wind", "issued")):
+            forecasts.append(escape(f"{p['name']}: {p['short']}, {p['temp']} F, wind {p['wind']}."))
+    weather = " ".join(forecasts) if forecasts else "A current usable NWS forecast was not available for this report."
+    month = today.month
+    seasonal = escape(HATCH_NOTES.get(month, "seasonal insect activity"))
+    weekday = today.strftime("%A")
+    opening = (f"Chris Izworski, reporting from Michigan on the current state of the {name} "
+               f"this {weekday} morning in {escape(season_for(month))}. "
+               + " ".join(fresh) + f" These measurements come from USGS station {station}, "
+               "not an observation made while standing in the river. This is a data-based conditions brief.")
+    paragraphs = [
+        opening,
+        f"The river is part of the {region} reporting area. The rotation describes this reach as {escape(river['context'])}. "
+        "A gauge describes its own location and time. A reading at one station does not describe every bend, tributary, "
+        "access point or downstream reach. Compare the station location with the stretch you intend to fish before "
+        "using these measurements to make a trip decision.",
+        "Discharge measures volume moving past the gauge. Gauge height measures water elevation relative to that "
+        "station's reference point. They are related but are not interchangeable. Neither number alone establishes "
+        "whether a crossing is safe, whether the current is manageable, or whether fish are feeding. Compare the "
+        "latest reading with the station's recent series and historical range. Without that comparison this brief "
+        "does not classify the flow as high, low, rising or falling.",
+        weather + " These are forecast conditions, not observations of the river. Weather on a particular reach "
+        "can differ from the forecast point. Check the latest forecast and any advisories again before leaving, "
+        "especially if travel will take several hours.",
+        f"For {today.strftime('%B')}, the seasonal calendar suggests watching for {seasonal}. This is a seasonal "
+        "reference, not a confirmed hatch report. No insect activity, catch, fish location or successful fly has "
+        "been observed for this edition. If you arrive at the river, spend time looking at the surface and margins "
+        "before choosing a presentation. The day's actual light, water temperature and insects should guide that choice.",
+        "Use caution around water that is cold, fast, turbid or changing. Do not use the reported gauge height as "
+        "a wading-depth estimate. Check conditions from the bank, identify a clear way out, and avoid unfamiliar "
+        "crossings when the bottom or current cannot be judged. Ice, wet rocks and changing flows can make a familiar "
+        "stretch behave differently from a previous visit. There is no access or safety clearance implied by this report.",
+        "Confirm current Michigan fishing regulations for the particular reach, date and species before fishing. "
+        "Rules can differ between sections of the same river. This report does not verify open seasons, special gear "
+        "restrictions or private access. Where a seasonal restriction applies, consider a different legal reach or "
+        "use the visit to observe the river from public land instead.",
+        f"To review the measurements directly, consult <a href='https://waterdata.usgs.gov/monitoring-location/{station}/'>"
+        f"USGS station {station}</a> and <a href='https://www.weather.gov/'>the National Weather Service</a>. "
+        "The measurement times above are part of the evidence, not a promise that conditions remain unchanged. "
+        "The <a href='https://michigantroutreport.com/'>Michigan Trout Report</a> provides the broader network of "
+        "river conditions and comparisons. A fresh measurement is a useful starting point, but the final decision "
+        "belongs to the conditions you find at the water."
+    ]
+    headings = {2: "Reading the gauge", 3: "The weather window", 4: "The seasonal calendar", 5: "The practical read"}
+    return "".join((f"<h2>{headings[i]}</h2>" if i in headings else "") + f"<p>{p}</p>"
+                   for i, p in enumerate(paragraphs))
+
+
+def build_post(force_slug="", today=None, single_river=False):
     today = today or datetime.now(MICHIGAN_TZ)
     is_sunday = today.weekday() == 6
     month = today.month
@@ -372,12 +480,15 @@ def build_post(force_slug="", today=None):
               f'By <a href="https://chrisizworski.com">{AUTHOR_NAME}</a> '
               f'&nbsp;|&nbsp; Michigan Trout Daily &nbsp;|&nbsp; {date_label}</p>\n')
 
-    if is_sunday and not force_slug:
+    if is_sunday and not force_slug and not single_river:
         log(f"Sunday → weekly rollup")
         user = WEEKLY_USER_TEMPLATE.format(today_long=today_long, month=today.strftime("%B"),
                                            hatch_note=hatch_note)
-        body = claude_generate(WEEKLY_SYSTEM, user)
-        body = body.strip()
+        try:
+            body = claude_generate(WEEKLY_SYSTEM, user).strip()
+        except GenerationUnavailable:
+            log("Weekly AI overview unavailable; publishing a measured single-river report instead")
+            return build_post(today=today, single_river=True)
         slug_date = today.strftime("%Y-%m-%d")
         slug = f"michigan-trout-daily-weekly-overview-sunday-{today.strftime('%B-%-d-%Y').lower().replace(' ', '-')}"
         title = f"Michigan Trout Daily Weekly Overview: Sunday, {today_short}"
@@ -411,7 +522,11 @@ def build_post(force_slug="", today=None):
             season_note=season_note, month=today.strftime("%B"),
             hatch_note=hatch_note,
         )
-        body = claude_generate(SYSTEM_PROMPT, user).strip()
+        try:
+            body = claude_generate(SYSTEM_PROMPT, user).strip()
+        except GenerationUnavailable as exc:
+            log(f"Provider unavailable: {exc}; using measured conditions fallback")
+            body = deterministic_report(river, usgs, nws, today)
         # Slug: river-name + month + day + descriptor
         slug = f"{river['slug']}-{today.strftime('%B').lower()}-{today.day}-daily-report"
         slug = re.sub(r"[^a-z0-9-]", "-", slug)
