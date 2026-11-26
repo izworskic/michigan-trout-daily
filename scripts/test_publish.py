@@ -45,3 +45,11 @@ class PublisherTests(unittest.TestCase):
             self.assertIn("AuSable",post["title"])
             sunday=p.build_post(today=self.now.replace(day=29))
             self.assertIn("AuSable",sunday["title"])
+
+    def test_permission_denial_never_rotates_credential(self):
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY_FALL_COLOR":"fall-fixture","ANTHROPIC_API_KEY":"legacy-fixture"}, clear=True):
+            with patch.object(p.requests,"post",return_value=Mock(status_code=403)) as req:
+                with self.assertRaises(p.GenerationUnavailable):
+                    p.claude_generate("system","user")
+                self.assertEqual(req.call_count,1)
+                self.assertEqual(req.call_args.kwargs["headers"]["x-api-key"],"fall-fixture")

@@ -42,3 +42,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
 ## Publisher credentials and recovery
 
 Configure `FALL_ANTHROPIC_API_KEY` directly in this repository's Actions secrets with the authorized fall-color Anthropic credential. It is preferred; `ANTHROPIC_API_KEY` remains the secondary credential for an explicit authentication failure. GitHub repository secrets cannot be read or copied automatically across repositories. Never commit a key. If generation fails, a validated measured-data conditions brief is published only with recent USGS evidence; Sunday falls back to a single-river report instead of a fabricated statewide overview. The existing two scheduled runs remain. A reviewed publisher change on main also triggers one deduplicated production run. Existing WordPress and IndexNow credentials are unchanged.
+
+The canonical Fall Color secret name `ANTHROPIC_API_KEY_FALL_COLOR` is also supported and preferred when present. Credential rotation is limited to HTTP 401; HTTP 403 permission denial and other errors proceed directly to the evidence-backed fallback without a second provider request.
