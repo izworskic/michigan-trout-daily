@@ -343,7 +343,7 @@ def claude_generate(system, user):
     # Never log keys or provider response bodies. Only retry with a different key
     # on explicit authentication failure, not after a potentially billable request.
     keys = []
-    for name in ("FALL_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"):
+    for name in ("ANTHROPIC_API_KEY_FALL_COLOR", "FALL_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"):
         key = os.environ.get(name, "").strip()
         if key and all(key != previous for _, previous in keys):
             keys.append((name, key))
@@ -359,7 +359,7 @@ def claude_generate(system, user):
             )
         except requests.RequestException as exc:
             raise GenerationUnavailable("Anthropic transport unavailable") from exc
-        if r.status_code in (401, 403):
+        if r.status_code == 401:
             log(f"{name}: authentication rejected (HTTP {r.status_code})")
             continue
         if r.status_code != 200:
